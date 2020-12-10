@@ -1,0 +1,278 @@
+---
+title: "Project1"
+output: html_document
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<div id="r-markdown" class="section level2">
+<h2>R Markdown</h2>
+<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
+<p>When you click the <strong>Knit</strong> button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
+</div>
+<div id="nam-nguyen-nhn325" class="section level2">
+<h2>Nam Nguyen nhn325</h2>
+<div id="i-retrieved-the-college_recent_grads-dataset-from-the-fivethirtyeight-library-and-retrieved-the-dataset-about-degree-salaries-online-from-kaggle.com.-kaggle-says-its-from-wallstreet-journal-and-that-it-was-updated-3-years-ago.-the-variables-in-the-college_recent_grad-dataset-observe-variables-pertaining-to-college-majors-such-as-major-type-sex-employment-and-unemployment.the-variables-in-the-major_salaries-dataset-has-variables-also-pertaining-to-college-majors-such-as-starting-median-salary-and-mid-career-salary.-by-joining-these-two-datasets-i-hope-to-see-any-type-of-relationship-between-variables-like-major-gender-emplotment-and-salary.-this-is-interesting-to-me-because-the-data-is-relevant-to-students-and-myself.-i-expect-certain-majors-to-have-larger-salaries-than-others." class="section level5">
+<h5>I retrieved the college_recent_grads dataset from the fivethirtyeight library and retrieved the dataset about degree salaries online from Kaggle.com. Kaggle says its from Wallstreet Journal and that it was updated 3 years ago. The variables in the college_recent_grad dataset observe variables pertaining to college majors such as major-type, sex, employment, and unemployment.The variables in the major_salaries dataset has variables also pertaining to college majors such as starting median salary and mid-career salary. By joining these two datasets, I hope to see any type of relationship between variables like major, gender, emplotment, and salary. This is interesting to me because the data is relevant to students and myself. I expect certain majors to have larger salaries than others.</h5>
+<hr />
+</div>
+<div id="load-in-the-libraries-and-data" class="section level5">
+<h5>load in the libraries and data</h5>
+<pre class="r"><code>library(cluster)
+library(GGally)</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;GGally&#39;:
+##   method from   
+##   +.gg   ggplot2</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v tibble  3.0.4     v dplyr   1.0.2
+## v tidyr   1.1.2     v stringr 1.4.0
+## v readr   1.4.0     v forcats 0.5.0
+## v purrr   0.3.4</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(fivethirtyeight)</code></pre>
+<pre><code>## Some larger datasets need to be installed separately, like senators and
+## house_district_forecast. To install these, we recommend you install the
+## fivethirtyeightdata package by running:
+## install.packages(&#39;fivethirtyeightdata&#39;, repos =
+## &#39;https://fivethirtyeightdata.github.io/drat/&#39;, type = &#39;source&#39;)</code></pre>
+<pre class="r"><code>college_recent_grads &lt;- as.data.frame(college_recent_grads)
+major_salaries &lt;- read_csv(&quot;degrees-that-pay-back.csv&quot;)</code></pre>
+<pre><code>## 
+## -- Column specification --------------------------------------------------------
+## cols(
+##   `Undergraduate Major` = col_character(),
+##   `Starting Median Salary` = col_character(),
+##   `Mid-Career Median Salary` = col_character(),
+##   `Percent change from Starting to Mid-Career Salary` = col_double(),
+##   `Mid-Career 10th Percentile Salary` = col_character(),
+##   `Mid-Career 25th Percentile Salary` = col_character(),
+##   `Mid-Career 75th Percentile Salary` = col_character(),
+##   `Mid-Career 90th Percentile Salary` = col_character()
+## )</code></pre>
+</div>
+<div id="i-used-pivot_wider-to-messen-the-data-then-pivot_longer-to-clean-it-up-and-dropped-rows-with-na-values." class="section level5">
+<h5>I used pivot_wider to messen the data then pivot_longer to clean it up and dropped rows with na values.</h5>
+<pre class="r"><code>college_recent_grads &lt;- college_recent_grads %&gt;% pivot_wider(names_from = major_category, values_from = major)
+
+college_recent_grads &lt;- college_recent_grads %&gt;% pivot_longer(cols = c(&quot;Engineering&quot;:&quot;Interdisciplinary&quot;), names_to = &quot;major_category&quot;, values_to = &quot;Undergraduate Major&quot;)
+
+
+college_recent_grads &lt;- drop_na(college_recent_grads) %&gt;% select(&quot;Undergraduate Major&quot;, &quot;major_category&quot;, everything())
+
+major_salaries &lt;- major_salaries %&gt;% pivot_wider(names_from = `Undergraduate Major`, values_from = `Starting Median Salary`)
+
+major_salaries &lt;- major_salaries %&gt;% pivot_longer(cols = c(&quot;Accounting&quot;:&quot;Spanish&quot;), names_to = &quot;Undergraduate Major&quot;, values_to = &quot;Starting Median Salary&quot;)
+
+major_salaries &lt;- drop_na(major_salaries) %&gt;% select(&quot;Undergraduate Major&quot;, &quot;Starting Median Salary&quot;, everything())</code></pre>
+</div>
+<div id="joining-the-datasets" class="section level5">
+<h5>Joining the datasets</h5>
+</div>
+<div id="the-two-datasets-were-joined-by-majors-so-the-rows-with-majors-that-were-not-listed-in-both-were-dropped." class="section level5">
+<h5>The two datasets were joined by majors so the rows with majors that were not listed in both were dropped.</h5>
+</div>
+<div id="potential-problems-could-be-significant-loss-of-data-as-the-total-observations-dropped-to-24." class="section level5">
+<h5>Potential problems could be significant loss of data as the total observations dropped to 24.</h5>
+</div>
+<div id="i-chose-to-drop-several-columns-of-data-that-i-felt-were-either-too-specific-or-not-as-relevant-as-other-columns." class="section level5">
+<h5>I chose to drop several columns of data that I felt were either too specific or not as relevant as other columns.</h5>
+<pre class="r"><code>joined_set &lt;- full_join(college_recent_grads, major_salaries, by = &quot;Undergraduate Major&quot;)
+
+joined_set &lt;- drop_na(joined_set) %&gt;% relocate(&quot;Undergraduate Major&quot;, &quot;major_category&quot;, before= everything())
+
+joined_set &lt;- joined_set %&gt;% select(-c(&quot;men&quot;, &quot;women&quot;, &quot;rank&quot;,&quot;sample_size&quot;, &quot;major_code&quot;, &quot;p25th&quot;, &quot;p75th&quot;, &quot;median&quot;, &quot;college_jobs&quot;, &quot;non_college_jobs&quot;, &quot;low_wage_jobs&quot;, &quot;Mid-Career 10th Percentile Salary&quot;:&quot;Mid-Career 75th Percentile Salary&quot;))</code></pre>
+</div>
+<div id="wrangling" class="section level5">
+<h5>Wrangling</h5>
+</div>
+<div id="i-removed-commas-as-well-as-the-dollar-sign-from-the-salary-columns." class="section level5">
+<h5>I removed commas as well as the dollar sign from the salary columns.</h5>
+</div>
+<div id="i-grouped-by-major-categories-such-as-engineering-and-observed-the-means-and-medians-of-salaries." class="section level5">
+<h5>I grouped by major categories such as engineering and observed the means and medians of salaries.</h5>
+</div>
+<div id="one-major-fault-is-that-there-isnt-enough-data-to-compute-means-on-several-categories-because-they-only-have-one-major" class="section level5">
+<h5>One major fault is that there isn’t enough data to compute means on several categories because they only have one major</h5>
+<pre class="r"><code>joined_set &lt;- joined_set %&gt;% mutate(`Starting Median Salary`=str_replace(`Starting Median Salary`,&quot;,&quot; ,&quot;&quot;)) %&gt;% mutate(`Starting Median Salary`=as.numeric(gsub(&#39;[$]&#39;,&#39;&#39;,`Starting Median Salary`))) %&gt;% mutate(`Mid-Career Median Salary`=str_replace(`Mid-Career Median Salary`,&quot;,&quot; ,&quot;&quot;)) %&gt;% mutate(`Mid-Career Median Salary`=as.numeric((gsub(&#39;[$]&#39;,&#39;&#39;,`Mid-Career Median Salary`)))) %&gt;% mutate(`Mid-Career 90th Percentile Salary`=str_replace(`Mid-Career 90th Percentile Salary`,&quot;,&quot; ,&quot;&quot;)) %&gt;% mutate(`Mid-Career 90th Percentile Salary`=as.numeric(gsub(&#39;[$]&#39;,&#39;&#39;,`Mid-Career 90th Percentile Salary`)))
+
+#joined_set &lt;- joined_set %&gt;% mutate(`Mid-Career Median Salary`=str_replace(`Mid-Career Median Salary`, &quot;$&quot;, &quot;&quot;)) %&gt;% mutate(`Mid-Career Median Salary`=str_replace(`Mid-Career Median Salary`, &quot;,&quot;, &quot;&quot;))
+
+joined_set %&gt;% group_by(major_category) %&gt;% summarise(mean_unemployment_rate=mean(unemployment_rate))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## # A tibble: 12 x 2
+##    major_category                  mean_unemployment_rate
+##    &lt;chr&gt;                                            &lt;dbl&gt;
+##  1 Agriculture &amp; Natural Resources                 0.0967
+##  2 Arts                                            0.0760
+##  3 Biology &amp; Life Science                          0.0707
+##  4 Business                                        0.0652
+##  5 Communications &amp; Journalism                     0.0722
+##  6 Computers &amp; Mathematics                         0.0632
+##  7 Engineering                                     0.0703
+##  8 Health                                          0.0449
+##  9 Humanities &amp; Liberal Arts                       0.0957
+## 10 Physical Sciences                               0.0511
+## 11 Psychology &amp; Social Work                        0.0838
+## 12 Social Science                                  0.0986</code></pre>
+<pre class="r"><code>joined_set %&gt;% group_by(major_category) %&gt;% summarise(median_start_salary=median(as.numeric(`Starting Median Salary`)), mean_start_salary=mean(as.numeric(`Starting Median Salary`))) %&gt;% arrange(desc(mean_start_salary))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## # A tibble: 12 x 3
+##    major_category                  median_start_salary mean_start_salary
+##    &lt;chr&gt;                                         &lt;dbl&gt;             &lt;dbl&gt;
+##  1 Engineering                                   57900            56657.
+##  2 Computers &amp; Mathematics                       55900            55900 
+##  3 Health                                        54200            54200 
+##  4 Business                                      46950            46950 
+##  5 Physical Sciences                             46450            46450 
+##  6 Social Science                                41050            42175 
+##  7 Humanities &amp; Liberal Arts                     39200            39200 
+##  8 Agriculture &amp; Natural Resources               39100            39100 
+##  9 Biology &amp; Life Science                        38800            38800 
+## 10 Communications &amp; Journalism                   36850            36850 
+## 11 Arts                                          35900            35900 
+## 12 Psychology &amp; Social Work                      35900            35900</code></pre>
+<pre class="r"><code>joined_set %&gt;% group_by(major_category) %&gt;% summarise(median_mid_salary=median(as.numeric(`Mid-Career Median Salary`)), mean_mid_salary=mean(as.numeric(`Mid-Career Median Salary`)), num_distinct = n_distinct(`Undergraduate Major`)) %&gt;% arrange(desc(mean_mid_salary))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## # A tibble: 12 x 4
+##    major_category                  median_mid_sala~ mean_mid_salary num_distinct
+##    &lt;chr&gt;                                      &lt;dbl&gt;           &lt;dbl&gt;        &lt;int&gt;
+##  1 Engineering                               101000           96700            7
+##  2 Computers &amp; Mathematics                    95500           95500            1
+##  3 Physical Sciences                          88600           88600            2
+##  4 Business                                   82700           82700            2
+##  5 Social Science                             73200           75800            4
+##  6 Humanities &amp; Liberal Arts                  71000           71000            1
+##  7 Communications &amp; Journalism                68350           68350            2
+##  8 Health                                     67000           67000            1
+##  9 Biology &amp; Life Science                     64800           64800            1
+## 10 Agriculture &amp; Natural Resources            62600           62600            1
+## 11 Psychology &amp; Social Work                   60400           60400            1
+## 12 Arts                                       55000           55000            1</code></pre>
+<pre class="r"><code>joined_set %&gt;% filter(major_category==&quot;Engineering&quot;) %&gt;% summarise(num_engineering = n())</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   num_engineering
+##             &lt;int&gt;
+## 1               7</code></pre>
+<pre class="r"><code>joined_set %&gt;% group_by(major_category) %&gt;% summarise(mean_90 = mean(as.numeric(`Mid-Career 90th Percentile Salary`))) %&gt;% arrange(desc(mean_90))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## # A tibble: 12 x 2
+##    major_category                  mean_90
+##    &lt;chr&gt;                             &lt;dbl&gt;
+##  1 Business                        173500 
+##  2 Physical Sciences               163000 
+##  3 Engineering                     161714.
+##  4 Social Science                  154250 
+##  5 Computers &amp; Mathematics         154000 
+##  6 Humanities &amp; Liberal Arts       149000 
+##  7 Communications &amp; Journalism     144000 
+##  8 Biology &amp; Life Science          135000 
+##  9 Arts                            134000 
+## 10 Psychology &amp; Social Work        127000 
+## 11 Agriculture &amp; Natural Resources 111000 
+## 12 Health                           98300</code></pre>
+<pre class="r"><code>joined_set %&gt;% select(`Undergraduate Major`, unemployment_rate) %&gt;% arrange(unemployment_rate)</code></pre>
+<pre><code>## # A tibble: 24 x 2
+##    `Undergraduate Major`  unemployment_rate
+##    &lt;chr&gt;                              &lt;dbl&gt;
+##  1 Nursing                           0.0449
+##  2 Physics                           0.0482
+##  3 Chemistry                         0.0540
+##  4 Mechanical Engineering            0.0573
+##  5 Electrical Engineering            0.0592
+##  6 Finance                           0.0607
+##  7 Chemical Engineering              0.0611
+##  8 Computer Science                  0.0632
+##  9 Aerospace Engineering             0.0652
+## 10 Computer Engineering              0.0654
+## # ... with 14 more rows</code></pre>
+</div>
+<div id="here-is-the-portrayal-of-a-correlation-heatmap-of-the-numerical-variables.-the-correlation-heatmap-shows-strong-correlations-between-similar-variables-such-as-starting-salary-mid-career-salary-and-90th-percentile-salary.-there-are-moderate-negative-correlations-between-salary-and-proportion-of-women-graduates.-variables-that-represent-alike-data-such-as-unemployment-and-unemployment-rate-have-strong-correlations.-the-main-correlations-that-i-am-interesting-from-making-this-heatmap-are-womenshare-total-and-salary." class="section level5">
+<h5>Here is the portrayal of a correlation heatmap of the numerical variables. The correlation heatmap shows strong correlations between similar variables such as starting salary, mid-career salary, and 90th percentile salary. There are moderate negative correlations between salary and proportion of women graduates. Variables that represent alike data such as unemployment and unemployment rate have strong correlations. The main correlations that I am interesting from making this heatmap are womenshare, total, and salary.</h5>
+<pre class="r"><code>joined_set %&gt;% rename(U=unemployed, UR=unemployment_rate, Tot=total, SS=`Starting Median Salary`, Wom = sharewomen, MSM=`Percent change from Starting to Mid-Career Salary`, MS=`Mid-Career Median Salary` , MS90=`Mid-Career 90th Percentile Salary`, EP=employed_parttime, EF=employed_fulltime, E=employed, EY=employed_fulltime_yearround) %&gt;% select_if(is.numeric) %&gt;% cor %&gt;%as.data.frame %&gt;% rownames_to_column %&gt;%pivot_longer(-1)%&gt;%ggplot(aes(rowname, name, fill=value))+geom_tile()+geom_text(aes(label=round(value,2)))+ xlab(&quot;&quot;)+ylab(&quot;&quot;)+coord_fixed()</code></pre>
+<p><img src="public/project/project1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="these-two-plots-display-the-negative-correlation-between-the-proportion-of-graduates-being-women-and-the-starting-median-salary-of-their-majors.-it-shows-that-majors-that-have-lower-proportion-of-women-tend-to-have-higher-starting-salaries.-there-could-be-many-outside-factors-that-could-affect-this-outcome." class="section level5">
+<h5>These two plots display the negative correlation between the proportion of graduates being women and the starting median salary of their majors. It shows that majors that have lower proportion of women tend to have higher starting salaries. There could be many outside factors that could affect this outcome.</h5>
+<pre class="r"><code>ggplot(joined_set, aes(`Starting Median Salary`, sharewomen, colour=`Undergraduate Major`)) + ylab(&quot;Proportion Women Graduates&quot;)+ ggtitle(&quot;Proportion Women vs. Starting Median Salary&quot;) + geom_point() + scale_y_continuous(breaks = seq(0, 1, by=.10), limits=c(0,0.9))</code></pre>
+<p><img src="public/project/project1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(joined_set, aes(`Mid-Career Median Salary`, sharewomen, colour=`Undergraduate Major`)) + ylab(&quot;Proportion Women Graduates&quot;)+ ggtitle(&quot;Proportion Women vs. Mid-Career Median Salary&quot;) + geom_point() + scale_y_continuous(breaks = seq(0, 1, by=.10), limits=c(0,0.9))</code></pre>
+<p><img src="public/project/project1_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+</div>
+<div id="this-plot-shows-a-positive-correlation-between-proportion-of-women-and-total-graduates.-from-this-it-shows-that-there-is-a-relationship-between-total-amount-of-graduates-and-the-proportion-of-them-being-women.-it-is-interesting-because-majors-with-lower-total-graduates-have-a-relatively-smaller-proportion-of-women-than-majors-with-higher-total-graduates.-it-shows-the-under-representaion-of-women-in-some-fields." class="section level5">
+<h5>This plot shows a positive correlation between proportion of women and total graduates. From this it shows that there is a relationship between total amount of graduates and the proportion of them being women. It is interesting because majors with lower total graduates have a relatively smaller proportion of women than majors with higher total graduates. It shows the under-representaion of women in some fields.</h5>
+<pre class="r"><code>joined_set %&gt;% group_by(major_category) %&gt;% ggplot(aes(total, sharewomen, colour=`major_category`)) + xlab(&quot;Total Graduates&quot;) + ylab(&quot;Proportion Women Graduates&quot;)+ ggtitle(&quot;Proportion Women vs. Total Graduates&quot;) + geom_point() + scale_y_continuous(breaks = seq(0, 1, by=.10), limits=c(0,0.9)) + stat_sum()</code></pre>
+<p><img src="public/project/project1_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="two-principal-components-are-responsible-for-more-than-90-of-the-variation" class="section level5">
+<h5>Two principal components are responsible for more than 90% of the variation</h5>
+<pre class="r"><code>pam_dat &lt;- joined_set%&gt;%select(sharewomen, `Starting Median Salary`, `Mid-Career Median Salary`, total)
+
+for(i in 2:10){
+  pam_fit &lt;- pam(pam_dat, k = i)
+}
+pam1 &lt;- joined_set %&gt;% pam( k=2)
+joined_set %&gt;% mutate(cluster=as.factor(pam1$clustering)) %&gt;% 
+  ggpairs(columns = c(&quot;sharewomen&quot;, &quot;Starting Median Salary&quot;, &quot;Mid-Career Median Salary&quot;, &quot;total&quot;), aes(color=cluster))</code></pre>
+<p><img src="public/project/project1_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>plot(pam1, which=2)</code></pre>
+<p><img src="public/project/project1_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<pre class="r"><code>plot(pam1, which=1)</code></pre>
+<p><img src="public/project/project1_files/figure-html/unnamed-chunk-8-3.png" width="672" /></p>
+</div>
+<div id="no-pattern-can-really-be-observed.-the-engineer-major-category-is-grouped-closely." class="section level5">
+<h5>No pattern can really be observed. The engineer major category is grouped closely.</h5>
+<pre class="r"><code>eig1&lt;-joined_set %&gt;% select(sharewomen, `Starting Median Salary`, `Mid-Career Median Salary`, total) %&gt;% cor %&gt;% eigen()
+X &lt;- joined_set %&gt;% select(sharewomen, `Starting Median Salary`, `Mid-Career Median Salary`, total) %&gt;% scale
+
+eig_matrix &lt;- eig1$vectors %&gt;% as.matrix()
+
+scaled_vals &lt;- X %&gt;% as.matrix()
+
+PCAscores &lt;- scaled_vals %*% eig_matrix
+plot(PCAscores)</code></pre>
+<p><img src="public/project/project1_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>fir_two &lt;- PCAscores[,1:2]
+plot(fir_two)</code></pre>
+<p><img src="public/project/project1_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
+<pre class="r"><code>fir_two</code></pre>
+<pre><code>##             [,1]       [,2]
+##  [1,] -2.3209802  0.5936664
+##  [2,] -1.8628010  0.3212583
+##  [3,] -2.2030540  0.6587207
+##  [4,] -2.4499326  0.3955777
+##  [5,] -2.3526484 -0.1464490
+##  [6,] -1.4223687  0.6782480
+##  [7,] -1.4313449 -0.1398873
+##  [8,]  1.5267431  1.3772755
+##  [9,] -0.2677492  0.6493856
+## [10,] -0.8405470  0.6905549
+## [11,]  0.7392068  0.7165440
+## [12,] -1.4076254 -0.2907123
+## [13,]  0.4803702 -0.7516041
+## [14,]  0.2224975 -0.8389334
+## [15,]  0.2689839 -0.5045796
+## [16,]  0.3482145 -1.3937478
+## [17,]  1.8274103  0.4676465
+## [18,]  1.5239813 -0.8898480
+## [19,] -0.1018526 -1.9447244
+## [20,]  0.9248877 -0.2849022
+## [21,]  2.0655342  0.8768614
+## [22,]  2.0319145 -0.6199591
+## [23,]  3.2445656  1.7676960
+## [24,]  1.4565943 -1.3880880</code></pre>
+<pre class="r"><code>joined_set%&gt;%mutate(PC1=PCAscores[,1], PC2=PCAscores[,2])%&gt;%
+  ggplot(aes(PC1,PC2,color=`major_category`))+geom_point()</code></pre>
+<p><img src="public/project/project1_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
+</div>
+<div id="no-outstanding-distinction-can-be-noticed.-there-is-a-divide-between-principal-components-but-not-pattern-of-types-of-major_categories.-the-engineering-major_category-is-clustered-on-the-left-side.-if-there-were-more-majors-under-each-category-then-maybe-there-could-be-a-visible-pattern." class="section level5">
+<h5>No outstanding distinction can be noticed. There is a divide between principal components but not pattern of types of major_categories. The engineering major_category is clustered on the left side. If there were more majors under each category then maybe there could be a visible pattern.</h5>
+</div>
+</div>

@@ -1,0 +1,9 @@
+---
+title: Python and R
+author: Nam Nguyen
+date: '2020-12-10'
+slug: python-and-r
+categories: []
+tags: []
+description: ''
+---

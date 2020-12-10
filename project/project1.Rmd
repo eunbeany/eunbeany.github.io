@@ -1,0 +1,139 @@
+---
+title: "Project1"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## Nam Nguyen nhn325
+
+##### I retrieved the college_recent_grads dataset from the fivethirtyeight library and retrieved the dataset about degree salaries online from Kaggle.com. Kaggle says its from Wallstreet Journal and that it was updated 3 years ago. The variables in the college_recent_grad dataset observe variables pertaining to college majors such as major-type, sex, employment, and unemployment.The variables in the major_salaries dataset has variables also pertaining to college majors such as starting median salary and mid-career salary. By joining these two datasets, I hope to see any type of relationship between variables like major, gender, emplotment, and salary. This is interesting to me because the data is relevant to students and myself. I expect certain majors to have larger salaries than others.
+
+---
+
+##### load in the libraries and data
+```{r}
+library(cluster)
+library(GGally)
+library(tidyverse)
+library(ggplot2)
+library(fivethirtyeight)
+college_recent_grads <- as.data.frame(college_recent_grads)
+major_salaries <- read_csv("degrees-that-pay-back.csv")
+``` 
+##### I used pivot_wider to messen the data then pivot_longer to clean it up and dropped rows with na values.
+
+```{r}
+college_recent_grads <- college_recent_grads %>% pivot_wider(names_from = major_category, values_from = major)
+
+college_recent_grads <- college_recent_grads %>% pivot_longer(cols = c("Engineering":"Interdisciplinary"), names_to = "major_category", values_to = "Undergraduate Major")
+
+
+college_recent_grads <- drop_na(college_recent_grads) %>% select("Undergraduate Major", "major_category", everything())
+
+major_salaries <- major_salaries %>% pivot_wider(names_from = `Undergraduate Major`, values_from = `Starting Median Salary`)
+
+major_salaries <- major_salaries %>% pivot_longer(cols = c("Accounting":"Spanish"), names_to = "Undergraduate Major", values_to = "Starting Median Salary")
+
+major_salaries <- drop_na(major_salaries) %>% select("Undergraduate Major", "Starting Median Salary", everything())
+```
+##### Joining the datasets
+##### The two datasets were joined by majors so the rows with majors that were not listed in both were dropped.
+##### Potential problems could be significant loss of data as the total observations dropped to 24.
+##### I chose to drop several columns of data that I felt were either too specific or not as relevant as other columns.
+```{r}
+joined_set <- full_join(college_recent_grads, major_salaries, by = "Undergraduate Major")
+
+joined_set <- drop_na(joined_set) %>% relocate("Undergraduate Major", "major_category", before= everything())
+
+joined_set <- joined_set %>% select(-c("men", "women", "rank","sample_size", "major_code", "p25th", "p75th", "median", "college_jobs", "non_college_jobs", "low_wage_jobs", "Mid-Career 10th Percentile Salary":"Mid-Career 75th Percentile Salary"))
+```
+##### Wrangling
+##### I removed commas as well as the dollar sign from the salary columns.
+##### I grouped by major categories such as engineering and observed the means and medians of salaries.
+##### One major fault is that there isn't enough data to compute means on several categories because they only have one major
+```{r}
+
+joined_set <- joined_set %>% mutate(`Starting Median Salary`=str_replace(`Starting Median Salary`,"," ,"")) %>% mutate(`Starting Median Salary`=as.numeric(gsub('[$]','',`Starting Median Salary`))) %>% mutate(`Mid-Career Median Salary`=str_replace(`Mid-Career Median Salary`,"," ,"")) %>% mutate(`Mid-Career Median Salary`=as.numeric((gsub('[$]','',`Mid-Career Median Salary`)))) %>% mutate(`Mid-Career 90th Percentile Salary`=str_replace(`Mid-Career 90th Percentile Salary`,"," ,"")) %>% mutate(`Mid-Career 90th Percentile Salary`=as.numeric(gsub('[$]','',`Mid-Career 90th Percentile Salary`)))
+
+#joined_set <- joined_set %>% mutate(`Mid-Career Median Salary`=str_replace(`Mid-Career Median Salary`, "$", "")) %>% mutate(`Mid-Career Median Salary`=str_replace(`Mid-Career Median Salary`, ",", ""))
+
+joined_set %>% group_by(major_category) %>% summarise(mean_unemployment_rate=mean(unemployment_rate))
+
+joined_set %>% group_by(major_category) %>% summarise(median_start_salary=median(as.numeric(`Starting Median Salary`)), mean_start_salary=mean(as.numeric(`Starting Median Salary`))) %>% arrange(desc(mean_start_salary))
+
+
+joined_set %>% group_by(major_category) %>% summarise(median_mid_salary=median(as.numeric(`Mid-Career Median Salary`)), mean_mid_salary=mean(as.numeric(`Mid-Career Median Salary`)), num_distinct = n_distinct(`Undergraduate Major`)) %>% arrange(desc(mean_mid_salary))
+
+
+joined_set %>% filter(major_category=="Engineering") %>% summarise(num_engineering = n())
+
+joined_set %>% group_by(major_category) %>% summarise(mean_90 = mean(as.numeric(`Mid-Career 90th Percentile Salary`))) %>% arrange(desc(mean_90))
+
+joined_set %>% select(`Undergraduate Major`, unemployment_rate) %>% arrange(unemployment_rate)
+
+```
+
+##### Here is the portrayal of a correlation heatmap of the numerical variables. The correlation heatmap shows strong correlations between similar variables such as starting salary, mid-career salary, and 90th percentile salary. There are moderate negative correlations between salary and proportion of women graduates. Variables that represent alike data such as unemployment and unemployment rate have strong correlations. The main correlations that I am interesting from making this heatmap are womenshare, total, and salary.
+```{r}
+joined_set %>% rename(U=unemployed, UR=unemployment_rate, Tot=total, SS=`Starting Median Salary`, Wom = sharewomen, MSM=`Percent change from Starting to Mid-Career Salary`, MS=`Mid-Career Median Salary` , MS90=`Mid-Career 90th Percentile Salary`, EP=employed_parttime, EF=employed_fulltime, E=employed, EY=employed_fulltime_yearround) %>% select_if(is.numeric) %>% cor %>%as.data.frame %>% rownames_to_column %>%pivot_longer(-1)%>%ggplot(aes(rowname, name, fill=value))+geom_tile()+geom_text(aes(label=round(value,2)))+ xlab("")+ylab("")+coord_fixed()
+
+```
+
+##### These two plots display the negative correlation between the proportion of graduates being women and the starting median salary of their majors. It shows that majors that have lower proportion of women tend to have higher starting salaries. There could be many outside factors that could affect this outcome.
+```{r}
+ggplot(joined_set, aes(`Starting Median Salary`, sharewomen, colour=`Undergraduate Major`)) + ylab("Proportion Women Graduates")+ ggtitle("Proportion Women vs. Starting Median Salary") + geom_point() + scale_y_continuous(breaks = seq(0, 1, by=.10), limits=c(0,0.9))
+
+ggplot(joined_set, aes(`Mid-Career Median Salary`, sharewomen, colour=`Undergraduate Major`)) + ylab("Proportion Women Graduates")+ ggtitle("Proportion Women vs. Mid-Career Median Salary") + geom_point() + scale_y_continuous(breaks = seq(0, 1, by=.10), limits=c(0,0.9))
+```
+
+##### This plot shows a positive correlation between proportion of women and total graduates. From this it shows that there is a relationship between total amount of graduates and the proportion of them being women. It is interesting because majors with lower total graduates have a relatively smaller proportion of women than majors with higher total graduates. It shows the under-representaion of women in some fields.
+```{r}
+joined_set %>% group_by(major_category) %>% ggplot(aes(total, sharewomen, colour=`major_category`)) + xlab("Total Graduates") + ylab("Proportion Women Graduates")+ ggtitle("Proportion Women vs. Total Graduates") + geom_point() + scale_y_continuous(breaks = seq(0, 1, by=.10), limits=c(0,0.9)) + stat_sum()
+```
+
+##### Two principal components are responsible for more than 90% of the variation
+```{r}
+pam_dat <- joined_set%>%select(sharewomen, `Starting Median Salary`, `Mid-Career Median Salary`, total)
+
+for(i in 2:10){
+  pam_fit <- pam(pam_dat, k = i)
+}
+pam1 <- joined_set %>% pam( k=2)
+joined_set %>% mutate(cluster=as.factor(pam1$clustering)) %>% 
+  ggpairs(columns = c("sharewomen", "Starting Median Salary", "Mid-Career Median Salary", "total"), aes(color=cluster))
+plot(pam1, which=2)
+plot(pam1, which=1)
+```
+
+##### No pattern can really be observed. The engineer major category is grouped closely.
+
+```{r}
+eig1<-joined_set %>% select(sharewomen, `Starting Median Salary`, `Mid-Career Median Salary`, total) %>% cor %>% eigen()
+X <- joined_set %>% select(sharewomen, `Starting Median Salary`, `Mid-Career Median Salary`, total) %>% scale
+
+eig_matrix <- eig1$vectors %>% as.matrix()
+
+scaled_vals <- X %>% as.matrix()
+
+PCAscores <- scaled_vals %*% eig_matrix
+plot(PCAscores)
+fir_two <- PCAscores[,1:2]
+plot(fir_two)
+
+fir_two
+joined_set%>%mutate(PC1=PCAscores[,1], PC2=PCAscores[,2])%>%
+  ggplot(aes(PC1,PC2,color=`major_category`))+geom_point()
+```
+
+##### No outstanding distinction can be noticed. There is a divide between principal components but not pattern of types of major_categories. The engineering major_category is clustered on the left side. If there were more majors under each category then maybe there could be a visible pattern. 

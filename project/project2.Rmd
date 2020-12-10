@@ -1,0 +1,383 @@
+---
+title: "Project2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## Nam Nguyen nhn325
+
+##### Summary: I found the dataset on Professor Salaries from the carData library. The variables in this dataset are professors' rank (Assistant Professor, Associate Professor, and Professor), discipline (A='Theoretical', B='Applied'), number of years since phd (yrs.since.phd), number of years in service (yrs.service), sex (male or female), and nine month salary (U.S. dollars). The data was collected over a 9 month period in 2008 and 2009 in hopes of finding out whether sex affected professor salaries.
+
+---
+
+##### load in libaries and data
+
+```{r}
+library(carData)
+library(tidyverse)
+library(dplyr)
+library(lmtest)
+library(sandwich)
+```
+
+#### Multivariate Analysis of Variance
+```{r}
+manova <- manova(cbind(yrs.since.phd, yrs.service, salary) ~ rank, data = Salaries)
+summary(manova)
+summary.aov(manova)
+```
+
+##### The variables show a significance mean difference across groups in the multivariate analysis. We run a univariate analysis to see if there is a mean difference accross groups.
+
+#### Univariate Analysis of Variance
+```{r}
+anova <- aov(yrs.since.phd ~ rank, data = Salaries)
+summary(anova)
+
+```
+##### The response variables all show significant difference
+
+```{r}
+pairwise.t.test(Salaries$yrs.since.phd, Salaries$rank, p.adj = "none")
+pairwise.t.test(Salaries$yrs.service, Salaries$rank, p.adj = "none")
+pairwise.t.test(Salaries$salary, Salaries$rank, p.adj = "none")
+```
+
+##### We have conducted four hypothesis tests(one Anova and three post-hoc t tests The Type I).
+##### The Type I error probability is 1 - .95^(4) = .1855
+##### The Bonferroni correction alpha is .05/4 = .0125
+#### Bonferroni adjustment
+
+```{r}
+pairwise.t.test(Salaries$yrs.since.phd, Salaries$rank, p.adj = "bonferroni")
+pairwise.t.test(Salaries$yrs.service, Salaries$rank, p.adj = "bonferroni")
+pairwise.t.test(Salaries$salary, Salaries$rank, p.adj = "bonferroni")
+```
+
+##### MANOVA assumptions such as random sampling, independent observations, linear relationships among dependent variables, and homogeneity are likely to have been met.
+
+### Mean-difference randomization test
+
+```{r}
+rand_dist<-vector()
+for(i in 1:5000){
+new<-data.frame(yrs_since_phd=sample(Salaries$yrs.since.phd),rank=Salaries$rank)
+rand_dist[i]<-mean(new[new$rank=="Prof",]$yrs_since_phd)-
+mean(new[new$rank=="AssocProf",]$yrs_since_phd)
+}
+
+```
+
+##### Null Hypothesis: There is no difference accross group means
+##### Alternative Hypothesis: There is a difference accross group means
+
+### Visualization of the mean difference randomization test
+##### The graph shows a normal distribution and we are able to reject the null hypothesis as the p-value is less than .05
+```{r}
+{hist(rand_dist,main="",ylab="")}
+Salaries %>% group_by(rank) %>% summarise(means = mean(yrs.since.phd))
+mean_diff_Prof_AssocProf = 28.3 - 15.453
+mean(rand_dist>12.847 | rand_dist < -12.847) #p-value
+```
+
+
+
+### Linear Regression Model
+```{r}
+fit1<-lm(salary~yrs.since.phd * yrs.service, data=Salaries) 
+summary(fit1)
+coeftest(fit1)
+coef(fit1)
+```
+##### The intercept is the predicted salary for an average professor regardless of rank ($70,155.26). Controlling for years of service, the years since PhD shows an increase of $2194.28 for every unit increase in year. Controlling for years since PhD, years of service shows an increase of $1692.44 for every unit increase in year. The slope of the interaction is -$64.61.
+
+
+### Mean-centering the variables
+##### Predicting salary from years since phd and years of service with interation.
+```{r}
+x1 <- scale(Salaries$yrs.since.phd)
+x2 <- scale(Salaries$yrs.service)
+y <- scale(Salaries$salary)
+```
+
+### Linear Regression Model Plot
+```{r}
+ggplot(data.frame(x1,x2,y), aes(x1,y, color = x2))+geom_point()+geom_smooth(method="lm",se=F) + ylab('Salary') + xlab('Years since PhD')
+```
+
+
+### Residual plot
+##### Plot the residuals to check whether linearity is met
+##### The red line on the plot should be horizontal
+```{r}
+assumptions <- lm(salary ~ yrs.since.phd * yrs.service, data = Salaries)
+plot(assumptions, 1)
+```
+
+### QQ plot
+##### Assumption of normality seems to be OK as the plot resembles a straight line
+```{r}
+plot(assumptions, 2)
+```
+
+### Scale-location plot (square rooted standardized residual vs. predicted value)
+##### Testing homoscedasticity
+##### The red line should be flat and the points should be equally spread out
+##### The red line in this plot seems to have a slightly positive slope and the points seem to be fanning out
+##### There is a possibility that the assumption of homoscedasticity is not met
+
+```{r}
+plot(assumptions,3)
+```
+
+### Formally test for homoscedasticity using the Breush-Pagan (bp) Test
+##### Since the p-value is p-value is less than .05, we reject the null hypothesis that there is no heteroscedasticity.
+##### This means we have failed the assumption of homoscedasticity
+```{r}
+
+bptest<-lm(salary ~ yrs.since.phd * yrs.service, data=Salaries)
+bptest(bptest) 
+```
+### Standard Errors robust to violations of homoskedasticity
+```{r}
+coeftest(fit1, vcov=vcovHC(fit1))[,1:2]
+```
+
+
+##### The proportion of variation in the response variable (salary) explained by the overall model (all predictors: years since PhD and years in service)
+```{r}
+(sum((Salaries$salary-mean(Salaries$salary))^2)-sum(fit1$residuals^2))/sum((Salaries$salary-mean(Salaries$salary))^2)
+```
+
+
+### Bootstrapping
+```{r}
+
+samp_distn<-replicate(5000, {
+  boot_dat <- sample_frac(Salaries, replace=T) #take bootstrap sample of rows
+  fit <- lm(salary ~ yrs.since.phd * yrs.service, data=boot_dat) #fit model on bootstrap sample
+  coef(fit) #save coefs
+})
+
+```
+
+##### Estimated SEs: the bootstrap SEs are lower than the robust SEs and original SEs
+
+```{r}
+samp_distn %>% t %>% as.data.frame %>% summarize_all(sd)
+```
+
+
+### Logistic Regression Model
+##### Make a new column and convert the sex variable into a binary, Male = 1, Female = 2
+```{r}
+Salaries$sex_b <- ifelse(Salaries$sex == 'Male', 1, 0)
+```
+
+```{r}
+library(plotROC)
+fit2<-glm(sex_b ~ salary + rank,data=Salaries, family = binomial(link = "logit"))
+coeftest(fit2)
+exp(coef(fit2))
+```
+##### From the p-values, we can deduce that there is no significant difference amongst these explanatory variables when controlling for the others.
+##### Odds: Each variable has positive odds for being male. This could be due to the prominence of male test subjects in this dataset. Intercept: Controlling for salary, the odds of an assistant professor is higher than other than the other ranks. Controlling for salary, Professor has higher odds of being male than associate.  Controlling for rank, salary has a positive impact on being male.
+
+
+### Predicted logit (log-odds) with specific target
+```{r}
+professor1 <- data.frame(salary = 100000, rank = 'Prof')
+
+predict(fit2, newdata=professor1, type= "link")
+```
+
+
+### Predicted probability of professor1 being a male
+```{r}
+predict(fit2, newdata=professor1, type = "response")
+```
+### Creating Confusion Matrix of fit2
+
+```{r}
+
+prob<-predict(fit2,type="response") #get predictions for every student in the dataset
+pred<-ifelse(prob>.5,1,0)
+table(prediction=pred, truth=Salaries$sex_b) %>% addmargins
+
+mean(Salaries$sex_b==pred) # Accuracy
+
+358/358 #TPR
+0/39 #TNR
+358/397 #PPV
+
+```
+##### The confusion matrix predicts male when it is actually female. Accuracy is 0.902 TPR is 358/358 = 1, TNR is 0/39 = 0, PPV is 358/397 = 0.902. The AUC is 0.6449291.
+### ROC plots. AUC = 0.645	
+```{r}
+
+Salaries$prob<-predict(fit2,type="response") 
+
+sens<-function(p,data=Salaries, y=sex_b) mean(Salaries[Salaries$sex_b==1,]$prob>p) 
+spec<-function(p,data=Salaries, y=sex_b) mean(Salaries[Salaries$sex_b==0,]$prob<p) 
+sensitivity<-sapply(seq(0,1,.01),sens,Salaries) #TPR
+specificity<-sapply(seq(0,1,.01),spec,Salaries) #TNR
+ROC1<-data.frame(sensitivity,specificity,cutoff=seq(0,1,.01))
+
+ROC1$TPR<-sensitivity
+ROC1$FPR<-1-specificity
+
+ROCplot<-ggplot(Salaries)+geom_roc(aes(d=sex_b,m=prob), n.cuts=0)+ geom_segment(aes(x=0,xend=1,y=0,yend=1),lty=2)
+ROC1%>%ggplot(aes(FPR,TPR))+geom_path(size=1.5)+geom_segment(aes(x=0,y=0,xend=1,yend=1)) + scale_x_continuous(limits = c(0,1))
+
+
+ROCplot
+calc_auc(ROCplot)
+
+```
+
+### Logistic Model with all other explanatory variables
+
+```{r}
+fit3<-glm(sex_b ~ discipline + yrs.since.phd + yrs.service,data=Salaries, family = binomial(link = "logit"))
+coeftest(fit3)
+exp(coef(fit3))
+```
+##### Intercept: Controlling for years since PhD and years of service, and discipline B, discipline A has a signicant effect on being male.
+
+
+### Creating Confusion Matrix of fit3.
+
+```{r}
+
+prob<-predict(fit3,type="response") #get predictions for every student in the dataset
+pred<-ifelse(prob>.5,1,0)
+table(prediction=pred, truth=Salaries$sex_b) %>% addmargins
+
+mean(Salaries$sex_b==pred) # Accuracy
+358/358 #TPR
+0/39  #TNR
+358/397 #PPV
+```
+
+```{r}
+
+
+Salaries$prob<-predict(fit3,type="response") 
+
+sens<-function(p,data=Salaries, y=sex_b) mean(Salaries[Salaries$sex_b==1,]$prob>p) 
+spec<-function(p,data=Salaries, y=sex_b) mean(Salaries[Salaries$sex_b==0,]$prob<p) 
+sensitivity<-sapply(seq(0,1,.01),sens,Salaries) #TPR
+specificity<-sapply(seq(0,1,.01),spec,Salaries) #TNR
+
+```
+
+### ROC plots. AUC is 0.6484386
+```{r}
+ROC1<-data.frame(sensitivity,specificity,cutoff=seq(0,1,.01))
+
+ROC1$TPR<-sensitivity
+ROC1$FPR<-1-specificity
+
+
+ROCplot<-ggplot(Salaries)+geom_roc(aes(d=sex_b,m=prob), n.cuts=0)+ geom_segment(aes(x=0,xend=1,y=0,yend=1),lty=2)
+ROC1%>%ggplot(aes(FPR,TPR))+geom_path(size=1.5)+geom_segment(aes(x=0,y=0,xend=1,yend=1)) + scale_x_continuous(limits = c(0,1))
+ROCplot
+
+calc_auc(ROCplot)
+```
+
+
+### Perform 10-fold cross-validation
+
+```{r}
+class_diag <- function(probs,truth){
+#CONFUSION MATRIX: CALCULATE ACCURACY, TPR, TNR, PPV
+tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+acc=sum(diag(tab))/sum(tab)
+sens=tab[2,2]/colSums(tab)[2]
+spec=tab[1,1]/colSums(tab)[1]
+ppv=tab[2,2]/rowSums(tab)[2]
+f1=2*(sens*ppv)/(sens+ppv)
+if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+#CALCULATE EXACT AUC
+ord<-order(probs, decreasing=TRUE)
+probs <- probs[ord]; truth <- truth[ord]
+TPR=cumsum(truth)/max(1,sum(truth))
+FPR=cumsum(!truth)/max(1,sum(!truth))
+dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+n <- length(TPR)
+auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+data.frame(acc,sens,spec,ppv,f1,auc)
+}
+
+set.seed(1234)
+k=10 #choose number of folds
+data<-Salaries[sample(nrow(Salaries)),] #randomly order rows
+folds<-cut(seq(1:nrow(Salaries)),breaks=k,labels=F) #create folds
+diags<-NULL
+for(i in 1:k){
+## Create training and test sets
+train<-data[folds!=i,]
+test<-data[folds==i,]
+truth<-test$sex_b ## Truth labels for fold i
+## Train model on training set (all but fold i)
+fit3<-glm(sex_b ~ discipline + yrs.since.phd + yrs.service,data=train,family="binomial")
+## Test model on test set (fold i)
+probs<-predict(fit3,newdata = test,type="response")
+## Get diagnostics for fold i
+diags<-rbind(diags,class_diag(probs,truth))
+}
+summarize_all(diags,mean) #average diagnostics across all k folds
+```
+##### Accuracy=0.902, Sensitivity=0, Specificity=0, Precision=0.902, and AUC=0.665. The AUC is really low which means our model is performing badly.
+
+
+### Perform LASSO
+
+```{r}
+library(glmnet)
+
+y<-as.matrix(Salaries$sex_b) #grab response
+x<-model.matrix(sex_b ~ discipline + yrs.since.phd + yrs.service, data=Salaries)[,-1] #grab predictors
+
+x<-scale(x) #standardize
+
+cv <- cv.glmnet(x,y, family="binomial") 
+{plot(cv$glmnet.fit, "lambda", label=TRUE); abline(v = log(cv$lambda.1se));}
+lasso<-glmnet(x,y,family="binomial",lambda=cv$lambda.1se)
+coef(lasso)
+```
+##### Discipline is the most predictive variable so it is retained.
+
+### Cross-Validate the Lasso Model
+
+```{r}
+set.seed(1234)
+k=10
+data <- Salaries %>% sample_frac #put rows of dataset in random order
+folds <- ntile(1:nrow(data),n=10) #create fold labels
+diags<-NULL
+for(i in 1:k){
+train <- data[folds!=i,] #create training set (all but fold i)
+test <- data[folds==i,] #create test set (just fold i)
+truth <- test$sex_b #save truth labels from fold i
+fit <- glm(sex_b~discipline,
+data=train, family="binomial")
+probs <- predict(fit, newdata=test, type="response")
+diags<-rbind(diags,class_diag(probs,truth))
+}
+diags%>%summarize_all(mean)
+```
+
+##### The AUC became lower.. There was no evidence for overfitting so the LASSO model caused the AUC to lower even further. I believe the variables in the dataset did not display an effective pattern for predicting sex. The model's underperformance may be due to the data itself being unpredictable.
+

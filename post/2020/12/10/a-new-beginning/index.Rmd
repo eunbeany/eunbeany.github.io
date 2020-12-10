@@ -1,0 +1,13 @@
+---
+title: A Demonstration of Python and R Together
+author: Nam Nguyen
+date: '2020-12-10'
+slug: a-new-beginning
+categories: []
+tags: []
+description: 'using python and r with reticuate'
+---
+
+[Link to project 1](/projects/project1/)
+
+##### Installing Reticulate
