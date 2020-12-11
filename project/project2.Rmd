@@ -7,12 +7,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
 ## Nam Nguyen nhn325
 
 ##### Summary: I found the dataset on Professor Salaries from the carData library. The variables in this dataset are professors' rank (Assistant Professor, Associate Professor, and Professor), discipline (A='Theoretical', B='Applied'), number of years since phd (yrs.since.phd), number of years in service (yrs.service), sex (male or female), and nine month salary (U.S. dollars). The data was collected over a 9 month period in 2008 and 2009 in hopes of finding out whether sex affected professor salaries.

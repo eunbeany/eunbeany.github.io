@@ -75,11 +75,6 @@
 <script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
 
 
-<div id="r-markdown" class="section level2">
-<h2>R Markdown</h2>
-<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>When you click the <strong>Knit</strong> button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
-</div>
 <div id="nam-nguyen-nhn325" class="section level2">
 <h2>Nam Nguyen nhn325</h2>
 <div id="summary-i-found-the-dataset-on-professor-salaries-from-the-cardata-library.-the-variables-in-this-dataset-are-professors-rank-assistant-professor-associate-professor-and-professor-discipline-atheoretical-bapplied-number-of-years-since-phd-yrs.since.phd-number-of-years-in-service-yrs.service-sex-male-or-female-and-nine-month-salary-u.s.-dollars.-the-data-was-collected-over-a-9-month-period-in-2008-and-2009-in-hopes-of-finding-out-whether-sex-affected-professor-salaries." class="section level5">
@@ -407,7 +402,7 @@ bptest(bptest) </code></pre>
 <h5>Estimated SEs: the bootstrap SEs are lower than the robust SEs and original SEs</h5>
 <pre class="r"><code>samp_distn %&gt;% t %&gt;% as.data.frame %&gt;% summarize_all(sd)</code></pre>
 <pre><code>##   (Intercept) yrs.since.phd yrs.service yrs.since.phd:yrs.service
-## 1    2724.886       304.889    408.5608                  10.37072</code></pre>
+## 1     2730.13      303.9833    412.8191                  10.33035</code></pre>
 </div>
 </div>
 <div id="logistic-regression-model" class="section level3">

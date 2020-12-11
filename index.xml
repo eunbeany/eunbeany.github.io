@@ -22,8 +22,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/project/project1/</guid>
-      <description>R MarkdownThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-When you click the Knit button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</description>
+      <description>Nam Nguyen nhn325I retrieved the college_recent_grads dataset from the fivethirtyeight library and retrieved the dataset about degree salaries online from Kaggle.com. Kaggle says its from Wallstreet Journal and that it was updated 3 years ago. The variables in the college_recent_grad dataset observe variables pertaining to college majors such as major-type, sex, employment, and unemployment.The variables in the major_salaries dataset has variables also pertaining to college majors such as starting median salary and mid-career salary.</description>
     </item>
     
     <item>
@@ -32,8 +31,7 @@ When you click the Knit button a document will be generated that includes both c
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/project/project2/</guid>
-      <description>R MarkdownThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-When you click the Knit button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</description>
+      <description>Nam Nguyen nhn325Summary: I found the dataset on Professor Salaries from the carData library. The variables in this dataset are professors’ rank (Assistant Professor, Associate Professor, and Professor), discipline (A=‘Theoretical’, B=‘Applied’), number of years since phd (yrs.since.phd), number of years in service (yrs.service), sex (male or female), and nine month salary (U.S. dollars). The data was collected over a 9 month period in 2008 and 2009 in hopes of finding out whether sex affected professor salaries.</description>
     </item>
     
     <item>
