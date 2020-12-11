@@ -1,0 +1,29 @@
+---
+title: "Python and R"
+author: "Nam Nguyen"
+date: '2020-12-11'
+slug: python-and-r
+categories: []
+tags: []
+description: ''
+---
+
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="index_files/anchor-sections/anchor-sections.js"></script>
+
+
+<div id="an-example-of-how-python-and-r-can-be-used-together-through-the-use-of-reticulate" class="section level5">
+<h5>An example of how Python and R can be used together through the use of reticulate</h5>
+<pre class="r"><code>library(reticulate) # R</code></pre>
+<pre class="python"><code>import numpy as np # Python
+mat1=np.array([[1,2],[3,4]])</code></pre>
+<pre class="r"><code>mat2&lt;-solve(py$mat1) #finding inverse matrix in R
+mat2</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,] -2.0  1.0
+## [2,]  1.5 -0.5</code></pre>
+<pre class="python"><code>np.dot(mat1,r.mat2).round() #matrix multiplication in Python</code></pre>
+<pre><code>## array([[1., 0.],
+##        [0., 1.]])</code></pre>
+</div>

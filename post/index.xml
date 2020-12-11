@@ -6,14 +6,14 @@
     <description>Recent content in Posts on Nam Nguyen</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Thu, 10 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 11 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Python and R</title>
-      <link>/post/2020/12/10/python-and-r/</link>
-      <pubDate>Thu, 10 Dec 2020 00:00:00 +0000</pubDate>
+      <link>/post/2020/12/11/python-and-r/</link>
+      <pubDate>Fri, 11 Dec 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/2020/12/10/python-and-r/</guid>
-      <description>An example of how Python and R can be used together through the use of reticulatelibrary(reticulate) # Load R Reticulate libraryimport numpy as np # Import the Numpy library from Pythonmat1=np.array([[1,2],[3,4]])mat2&amp;lt;-solve(py$mat1) # Calculate the Inverse matrix in R using the numpy matrix from Pythonmat2## [,1] [,2]## [1,] -2.0 1.0## [2,] 1.5 -0.5np.dot(mat1,r.mat2).round # Back to Python- using matrix multiplication to find the Inverse Matrix## &amp;lt;built-in method round of numpy.</description>
+      <guid>/post/2020/12/11/python-and-r/</guid>
+      <description>An example of how Python and R can be used together through the use of reticulatelibrary(reticulate) # Rimport numpy as np # Pythonmat1=np.array([[1,2],[3,4]])mat2&amp;lt;-solve(py$mat1) #finding inverse matrix in Rmat2## [,1] [,2]## [1,] -2.0 1.0## [2,] 1.5 -0.5np.dot(mat1,r.mat2).round() #matrix multiplication in Python## array([[1., 0.],## [0., 1.]])</description>
     </item>
     
   </channel>
