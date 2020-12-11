@@ -9,24 +9,21 @@ description: ''
 ---
 
 ##### An example of how Python and R can be used together through the use of reticulate
-##### Load R Reticulate library
+
 ```{r}
-library(reticulate)
+library(reticulate) # Load R Reticulate library
 ```
 
-##### Import the Numpy library from Python
 ```{python}
-import numpy as np
+import numpy as np # Import the Numpy library from Python
 mat1=np.array([[1,2],[3,4]])
 ```
 
-##### Calculate the Inverse matrix in R using the numpy matrix from Python
 ```{r}
-mat2<-solve(py$mat1)
+mat2<-solve(py$mat1) # Calculate the Inverse matrix in R using the numpy matrix from Python
 mat2
 ```
-##### Back to Python- using matrix multiplication to find the Inverse Matrix
 ```{python}
-np.dot(mat1,r.mat2).round()
+np.dot(mat1,r.mat2).round # Back to Python- using matrix multiplication to find the Inverse Matrix
 ```
 

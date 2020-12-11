@@ -15,27 +15,14 @@ description: ''
 
 <div id="an-example-of-how-python-and-r-can-be-used-together-through-the-use-of-reticulate" class="section level5">
 <h5>An example of how Python and R can be used together through the use of reticulate</h5>
-</div>
-<div id="load-r-reticulate-library" class="section level5">
-<h5>Load R Reticulate library</h5>
-<pre class="r"><code>library(reticulate)</code></pre>
-</div>
-<div id="import-the-numpy-library-from-python" class="section level5">
-<h5>Import the Numpy library from Python</h5>
-<pre class="python"><code>import numpy as np
+<pre class="r"><code>library(reticulate) # Load R Reticulate library</code></pre>
+<pre class="python"><code>import numpy as np # Import the Numpy library from Python
 mat1=np.array([[1,2],[3,4]])</code></pre>
-</div>
-<div id="calculate-the-inverse-matrix-in-r-using-the-numpy-matrix-from-python" class="section level5">
-<h5>Calculate the Inverse matrix in R using the numpy matrix from Python</h5>
-<pre class="r"><code>mat2&lt;-solve(py$mat1)
+<pre class="r"><code>mat2&lt;-solve(py$mat1) # Calculate the Inverse matrix in R using the numpy matrix from Python
 mat2</code></pre>
 <pre><code>##      [,1] [,2]
 ## [1,] -2.0  1.0
 ## [2,]  1.5 -0.5</code></pre>
-</div>
-<div id="back-to-python--using-matrix-multiplication-to-find-the-inverse-matrix" class="section level5">
-<h5>Back to Python- using matrix multiplication to find the Inverse Matrix</h5>
-<pre class="python"><code>np.dot(mat1,r.mat2).round()</code></pre>
-<pre><code>## array([[1., 0.],
-##        [0., 1.]])</code></pre>
+<pre class="python"><code>np.dot(mat1,r.mat2).round # Back to Python- using matrix multiplication to find the Inverse Matrix</code></pre>
+<pre><code>## &lt;built-in method round of numpy.ndarray object at 0x000000002A75B490&gt;</code></pre>
 </div>
