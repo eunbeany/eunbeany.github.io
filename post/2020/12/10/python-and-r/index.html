@@ -1,8 +1,21 @@
+---
+title: Python and R
+author: Nam Nguyen
+date: '2020-12-10'
+slug: python-and-r
+categories: []
+tags: []
+description: ''
+---
+
 <script src="index_files/header-attrs/header-attrs.js"></script>
 <link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
 <script src="index_files/anchor-sections/anchor-sections.js"></script>
 
 
+<p><img src="/img/rikka2.png" /></p>
+<div id="an-example-of-how-python-and-r-can-be-used-together-through-the-use-of-reticulate" class="section level5">
+<h5>An example of how Python and R can be used together through the use of reticulate</h5>
 <pre class="r"><code>library(reticulate)</code></pre>
 <pre class="python"><code>import numpy as np
 mat1=np.array([[1,2],[3,4]])</code></pre>
@@ -14,3 +27,4 @@ mat2</code></pre>
 <pre class="python"><code>np.dot(mat1,r.mat2).round()</code></pre>
 <pre><code>## array([[1., 0.],
 ##        [0., 1.]])</code></pre>
+</div>

@@ -7,6 +7,9 @@ categories: []
 tags: []
 description: ''
 ---
+![](/img/rikka2.png)
+
+##### An example of how Python and R can be used together through the use of reticulate
 ```{r}
 library(reticulate)
 ```
