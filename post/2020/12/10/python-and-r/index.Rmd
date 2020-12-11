@@ -13,16 +13,18 @@ description: ''
 library(reticulate)
 ```
 
+##### Here we use the numpy library in Python to make a numpy matrix
 ```{python}
 import numpy as np
 mat1=np.array([[1,2],[3,4]])
 ```
 
+##### Using the Solve function in R, the inverse of the matrix is found
 ```{r}
 mat2<-solve(py$mat1)
 mat2
 ```
-
+##### And we go back to Python to multiply the original matrix with the inverse. Identity Matrix!
 ```{python}
 np.dot(mat1,r.mat2).round()
 ```
