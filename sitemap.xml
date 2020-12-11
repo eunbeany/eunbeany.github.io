@@ -3,42 +3,42 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/index.html/</loc>
+    <loc>/</loc>
     <lastmod>2020-12-10T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/index.html/post/</loc>
+    <loc>/post/</loc>
     <lastmod>2020-12-10T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/index.html/post/2020/12/10/python-and-r/</loc>
+    <loc>/post/2020/12/10/python-and-r/</loc>
     <lastmod>2020-12-10T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/index.html/categories/</loc>
+    <loc>/categories/</loc>
   </url>
   
   <url>
-    <loc>/index.html/project/project1/</loc>
+    <loc>/project/project1/</loc>
   </url>
   
   <url>
-    <loc>/index.html/project/project2/</loc>
+    <loc>/project/project2/</loc>
   </url>
   
   <url>
-    <loc>/index.html/project/</loc>
+    <loc>/project/</loc>
   </url>
   
   <url>
-    <loc>/index.html/projects/</loc>
+    <loc>/projects/</loc>
   </url>
   
   <url>
-    <loc>/index.html/tags/</loc>
+    <loc>/tags/</loc>
   </url>
   
 </urlset>
