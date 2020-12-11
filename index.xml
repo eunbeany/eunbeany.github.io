@@ -22,7 +22,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/project/project1/</guid>
-      <description>Nam Nguyen nhn325I retrieved the college_recent_grads dataset from the fivethirtyeight library and retrieved the dataset about degree salaries online from Kaggle.com. Kaggle says its from Wallstreet Journal and that it was updated 3 years ago. The variables in the college_recent_grad dataset observe variables pertaining to college majors such as major-type, sex, employment, and unemployment.The variables in the major_salaries dataset has variables also pertaining to college majors such as starting median salary and mid-career salary.</description>
+      <description>Nam Nguyen nhn325Summary: I retrieved the college_recent_grads dataset from the fivethirtyeight library and retrieved the dataset about degree salaries online from Kaggle.com. Kaggle says its from Wallstreet Journal and that it was updated 3 years ago. The variables in the college_recent_grad dataset observe variables pertaining to college majors such as major-type, sex, employment, and unemployment. The variables in the major_salaries dataset has variables also pertaining to college majors such as starting median salary and mid-career salary.</description>
     </item>
     
     <item>

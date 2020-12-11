@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Nam Nguyen nhn325
 
-##### I retrieved the college_recent_grads dataset from the fivethirtyeight library and retrieved the dataset about degree salaries online from Kaggle.com. Kaggle says its from Wallstreet Journal and that it was updated 3 years ago. The variables in the college_recent_grad dataset observe variables pertaining to college majors such as major-type, sex, employment, and unemployment. The variables in the major_salaries dataset has variables also pertaining to college majors such as starting median salary and mid-career salary. By joining these two datasets, I hope to see any type of relationship between variables like major, gender, emplotment, and salary. This is interesting to me because the data is relevant to students and myself. I expect certain majors to have larger salaries than others.
+##### Summary: I retrieved the college_recent_grads dataset from the fivethirtyeight library and retrieved the dataset about degree salaries online from Kaggle.com. Kaggle says its from Wallstreet Journal and that it was updated 3 years ago. The variables in the college_recent_grad dataset observe variables pertaining to college majors such as major-type, sex, employment, and unemployment. The variables in the major_salaries dataset has variables also pertaining to college majors such as starting median salary and mid-career salary. By joining these two datasets, I hope to see any type of relationship between variables like major, gender, emplotment, and salary. This is interesting to me because the data is relevant to students and myself. I expect certain majors to have larger salaries than others.
 
 ---
 
