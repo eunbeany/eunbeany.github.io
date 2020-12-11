@@ -13,7 +13,7 @@
       <pubDate>Fri, 11 Dec 2020 00:00:00 +0000</pubDate>
       
       <guid>/post/2020/12/11/python-and-r/</guid>
-      <description>An example of how Python and R can be used together through the use of reticulatelibrary(reticulate) # Rimport numpy as np # Pythonmat1=np.array([[1,2],[3,4]])mat2&amp;lt;-solve(py$mat1) #finding inverse matrix in Rmat2## [,1] [,2]## [1,] -2.0 1.0## [2,] 1.5 -0.5np.dot(mat1,r.mat2).round() #matrix multiplication in Python## array([[1., 0.],## [0., 1.]])</description>
+      <description>An example of how Python and R can be used together through the use of reticulatelibrary(reticulate) #access the reticulate library in Rimport numpy as np #import numpy from Pythonmat1=np.array([[1,2],[3,4]]) #initiate matrix as mat1mat1## array([[1, 2],## [3, 4]])mat2&amp;lt;-solve(py$mat1) #find the inverse matrix (mat2) in Rmat2## [,1] [,2]## [1,] -2.0 1.0## [2,] 1.5 -0.5np.dot(mat1,r.mat2).round() #matrix multiplication within Python## array([[1.</description>
     </item>
     
     <item>
